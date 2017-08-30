@@ -1,0 +1,125 @@
+html, body {
+  height: 100%;
+  background-color: black;
+}
+
+.container {  /*Bootstrap class */
+  position: relative;
+  height: 100%;
+}
+
+header {
+  margin-top: 50px;
+  margin-bottom: 40px;
+  font-size: 63px;
+  line-height: 1.1;
+  color: #6441A4;
+}
+
+#wrap {
+  height: auto;
+  width: 30%;
+  max-width: 250px;
+  margin: auto;
+}
+
+.list-group-item, .list-group-item:first-child {
+  /*border-color: #6441A4;*/
+  border-width: thick;
+  border-radius: 10%;
+  z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  transition: border 0.2s ease-in-out, color 1s, background-color 1s;
+}
+
+.list-group-item.interactive:hover {
+  border-left: thick solid orange;
+  color: grey;
+}
+
+.list-group-item.interactive:hover .list-group-item-heading {
+   font-weight: bold;
+}
+
+.list-group-item-heading {
+  font-size: x-large;
+  /*margin-left: 0.75em;*/
+}
+
+.list-group-item-text {
+  font-size: large;
+  margin-left: 0.5em;
+}
+
+.userLogo {
+  height: auto;
+  min-width: 5em;
+  width: 12%;
+  max-width: 6em;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.userInfo {
+  display: inline-block;
+  margin-left: 1.5em;
+  max-width: 80%;
+  vertical-align: middle;
+}
+
+.userBio {
+  /*max-width: 100%;*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stream {
+  margin-top: 1em;
+  margin-right: 0.5em;
+  margin-left: 0.5em; 
+}
+
+.disabled-text {
+  font-style: italic;
+  font-color: grey;
+  opacity: 0.7;
+}
+
+#toTopDiv {
+  /*width: 100%;*/
+  margin-top: -20px;
+  margin-bottom: 0px;
+  font-size: large;
+}
+
+.fa-chevron-up {
+  color: Indigo;
+  position: relative;
+  margin-top: -0.35em;
+  z-index: 1;
+  transition: color 0.5s;
+}
+
+.fa-chevron-up:hover {
+  color: #6441a4;
+}
+
+footer {
+  position: relative;
+  bottom: 0px;
+  width: 100%;
+  z-index: 0;
+}
+
+footer a {
+  transition: color 0.5s;
+}
+
+a:visited, a:hover {
+  text-decoration: none;
+}
+
+
