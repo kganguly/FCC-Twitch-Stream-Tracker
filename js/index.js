@@ -1,16 +1,16 @@
-var debug = false;
+var debug = true;
 var clientId = "whozyuc72w6lm5gapst8n65spsu3s7";
 var userNameArray = ["nalcs1", "esl_sc2", "ogamingsc2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "brunofin", "comster404"];
 var broadcasters = {};
 
-$(document).ready(function() {
+$(document).ready(function () {
   setListeners();
   setBroadcasters(userNameArray);
   getStatus();
 });
 
 function setListeners() {
-  $("#toTop").click(function(event) {
+  $("#toTop").click(function (event) {
     // Prevent default anchor click behavior
     event.preventDefault();
     scrollToTop(event);
@@ -18,7 +18,7 @@ function setListeners() {
 }
 
 function setBroadcasters(userNames) {
-  userNames.forEach(function(element) {
+  userNames.forEach(function (element) {
     broadcasters[element.toLowerCase()] = {};
   });
   if (debug) console.log(broadcasters);
@@ -39,9 +39,18 @@ function showStatus() {
   //throw "Testing!";
 }
 
+function addBroadcaster(userName) {
+  broadcasters[userName.toLowerCase()] = {};
+  let userPromise = getNewUser(userName);
+  $.when.call($, userPromise, getUserStream(userName)).done(showStatus).fail(showFail);
+}
+
 function delayedPromise() {
   var promise = $.Deferred();
-  setTimeout(function() {console.log("RESOLVE!"); promise.resolve();}, 3000);
+  setTimeout(function () {
+    console.log("RESOLVE!");
+    promise.resolve();
+  }, 3000);
   return promise;
 }
 
@@ -55,10 +64,16 @@ function getUsers() {
   return $.when.apply($, userPromiseArr);
 }
 
+function getNewUser(userName) {
+  var userPromise = getUser(userName);
+  broadcasters[userName].promise = userPromise;
+  return userPromise;
+}
+
 function getUser(userName) {
   var queryUrl = "https://api.twitch.tv/kraken/users/" + userName + "?api_version=3&client_id=" + clientId;
 
-  return submitQuery(queryUrl).then(showUser, function(data) {
+  return submitQuery(queryUrl).then(showUser, function (data) {
     noUser(data, queryUrl);
   });
 }
@@ -70,26 +85,26 @@ function showUser(data) {
   }
   broadcasters[data.name].data = data;
   if (debug) console.log(broadcasters);
-  
+
   var logoHtml = "";
   if (data.logo) {
     logoHtml = "<img class='img-circle userLogo' src='" + data.logo + "'>";
   } else {
     logoHtml = "<div class='userLogo'>" + glitchSvg + "</div>";
   }
-  
+
   var bioHtml = "";
   if (data.bio) bioHtml = "<p class='userBio'>" + data.bio + "</p>";
 
   var userHTML = "";
   userHTML += "<a id='" + data.name + "' class='list-group-item interactive' href='https://www.twitch.tv/" + data.name + "' target='_blank'>" +
-    "<div class='userLabel'>" + 
+    "<div class='userLabel'>" +
     logoHtml +
     "<div class='userInfo'>" +
     "<span class='list-group-item-heading'>" + data.display_name + "</span>" +
     "<span class='list-group-item-text status'>Loading...</span>" +
-     bioHtml + 
-    "</div>" + 
+    bioHtml +
+    "</div>" +
     "</div></a>";
 
   $("#offline").append(userHTML);
@@ -126,7 +141,18 @@ function noUser(err, queryUrl) {
 function getStreams() {
   var queryUrl = "https://api.twitch.tv/kraken/streams?api_version=3&client_id=" + clientId + "&channel=" + Object.keys(broadcasters);
 
-  return submitQuery(queryUrl).then(showStreams, function(err, queryUrl) {
+  return submitQuery(queryUrl).then(showStreams, function (err, queryUrl) {
+    console.log("STREAM ERR:");
+    console.log(err);
+    console.log("Query: " + queryUrl);
+    return false;
+  });
+}
+
+function getUserStream(userName) {
+  var queryUrl = "https://api.twitch.tv/kraken/streams?api_version=3&client_id=" + clientId + "&channel=" + userName;
+
+  return submitQuery(queryUrl).then(showStreams, function (err, queryUrl) {
     console.log("STREAM ERR:");
     console.log(err);
     console.log("Query: " + queryUrl);
@@ -141,15 +167,15 @@ function showStreams(data) {
   }
 
   var showStreamPromArr = [];
-  
+
   var streams = data.streams;
-  streams.forEach(function(entry) {
+  streams.forEach(function (entry) {
     var userName = entry.channel.name;
     var userPromise = broadcasters[userName].promise;
     showStreamPromArr.push(userPromise.then(function () {
       var statusHTML = "<div class='text-center stream'><img src='" + entry.preview.large + "' class='img-responsive center-block'>" +
-          "<div class='description'><i class='fa fa-gamepad'></i> " + entry.game +
-          " - " + entry.channel.status + " | Viewers: " + entry.viewers + "</div></div>"; 
+        "<div class='description'><i class='fa fa-gamepad'></i> " + entry.game +
+        " - " + entry.channel.status + " | Viewers: " + entry.viewers + "</div></div>";
       var el = $("#" + userName);
       el.append(statusHTML);
       el.appendTo("#online");
@@ -157,10 +183,10 @@ function showStreams(data) {
       if (debug) console.log("SHOWSTREAM: " + userName);
     }));
   });
-  
-  return $.when.apply($, showStreamPromArr).then(function() {
+
+  return $.when.apply($, showStreamPromArr).then(function () {
     if (debug) {
-      console.log(showStreamPromArr); 
+      console.log(showStreamPromArr);
       console.log("STREAMS SHOWN!");
     }
   });

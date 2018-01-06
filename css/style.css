@@ -1,9 +1,11 @@
-html, body {
+html,
+body {
   height: 100%;
   background-color: black;
 }
 
-.container {  /*Bootstrap class */
+.container {
+  /*Bootstrap class */
   position: relative;
   height: 100%;
 }
@@ -23,7 +25,8 @@ header {
   margin: auto;
 }
 
-.list-group-item, .list-group-item:first-child {
+.list-group-item,
+.list-group-item:first-child {
   /*border-color: #6441A4;*/
   border-width: thick;
   border-radius: 10%;
@@ -40,7 +43,7 @@ header {
 }
 
 .list-group-item.interactive:hover .list-group-item-heading {
-   font-weight: bold;
+  font-weight: bold;
 }
 
 .list-group-item-heading {
@@ -79,12 +82,12 @@ header {
 .stream {
   margin-top: 1em;
   margin-right: 0.5em;
-  margin-left: 0.5em; 
+  margin-left: 0.5em;
 }
 
 .disabled-text {
   font-style: italic;
-  font-color: grey;
+  color: grey;
   opacity: 0.7;
 }
 
@@ -118,8 +121,7 @@ footer a {
   transition: color 0.5s;
 }
 
-a:visited, a:hover {
+a:visited,
+a:hover {
   text-decoration: none;
 }
-
-
