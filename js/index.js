@@ -47,7 +47,7 @@ function setListeners() {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     let newUser = event.target.elements.newUser.value;
-    if (newUser) alert(newUser);
+    if (newUser) addBroadcaster(newUser);
     document.getElementById("newUser").value = "";
   });
 }
