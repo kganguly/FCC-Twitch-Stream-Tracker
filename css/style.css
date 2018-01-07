@@ -110,6 +110,77 @@ header {
   color: #6441a4;
 }
 
+#addUser {
+  position: fixed;
+  bottom: 3%;
+  right: 3%;
+  z-index: 2;
+  border-radius: 30px;
+  border: solid 4px #6441a4;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #6441a4;
+  font-size: 4rem;
+  /*line-height: 50px;*/
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.5;
+  transition: opacity 0.75s ease-in-out, background-color 0.5s ease-in, width 0.5s ease-in;
+  cursor: pointer;
+}
+
+#addUser:hover {
+  opacity: 0.9;
+  background-color: rgba(0, 0, 0, 0.9)
+}
+
+#addUser.form {
+  width: 300px;
+  opacity: 0.9;
+  background-color: rgba(0, 0, 0, 0.9)
+}
+
+#addUser>form {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  align-content: center;
+}
+
+#newUser {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  height: 50px;
+  width: 100%;
+  margin-left: 10px;
+  vertical-align: middle;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  font-size: 3.5rem;
+  line-height: 50px;
+  outline: none;
+}
+
+#newUser.show {
+  transition: all 0.5s;
+  position: initial;
+  z-index: inherit;
+  display: initial;
+  opacity: 1;
+}
+
+#userSubmit {
+  background-color: rgba(0, 0, 0, 0);
+  width: 60px;
+  height: 100%;
+  border: none;
+  outline: none;
+}
+
 footer {
   position: relative;
   bottom: 0px;

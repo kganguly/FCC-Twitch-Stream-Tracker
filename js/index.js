@@ -9,11 +9,46 @@ $(document).ready(function () {
   getStatus();
 });
 
+function closeForm() {
+  document.getElementById("addUser").classList.remove("form");
+  document.getElementById("newUser").classList.remove("show");
+}
+
+function closeFormIfOutside() {
+  if (event.target.closest("div") !== document.getElementById("addUser")) {
+    closeForm();
+    window.removeEventListener("click", closeFormIfOutside);
+  }
+}
+
 function setListeners() {
   $("#toTop").click(function (event) {
     // Prevent default anchor click behavior
     event.preventDefault();
     scrollToTop(event);
+  });
+  document.getElementById("userSubmit").addEventListener("click", function (event) {
+    if (!this.closest("div").classList.contains("form")) {
+      event.preventDefault();
+      this.closest("div").classList.add("form");
+      window.addEventListener("click", closeFormIfOutside);
+      setTimeout(() => {
+        if (document.getElementById("addUser").classList.contains("form")) {
+          let newUser = document.getElementById("newUser");
+          newUser.classList.add("show");
+          newUser.focus();
+        }
+      }, 1000);
+    } else {
+      closeForm();
+    }
+  });
+  let form = document.querySelector("#addUser>form");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    let newUser = event.target.elements.newUser.value;
+    if (newUser) alert(newUser);
+    document.getElementById("newUser").value = "";
   });
 }
 
