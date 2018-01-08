@@ -160,7 +160,7 @@ function showUser(data) {
 
   var userHTML = "";
   userHTML += "<a id='" + data.name + "' class='list-group-item interactive' href='https://www.twitch.tv/" + data.name + "' target='_blank'>" +
-    "<button class='hide-button' onclick='removeBroadcaster(this.parentElement.id); event.preventDefault();'>x</button>" +
+    "<button class='hide-button' onclick='removeBroadcaster(this.parentElement.id); event.preventDefault();'>X</button>" +
     "<div class='userLabel'>" +
     logoHtml +
     "<div class='userInfo'>" +
@@ -187,7 +187,7 @@ function noUser(err, queryUrl) {
   var userHTML = "";
 
   userHTML += "<div id='" + userName + "' class='list-group-item disabled userLabel'>" +
-    "<button class='hide-button' onclick='removeBroadcaster(this.parentElement.id); event.preventDefault();'>x</button>" +
+    "<button class='hide-button' onclick='removeBroadcaster(this.parentElement.id); event.preventDefault();'>X</button>" +
     "<div class='userLogo'>" + glitchSvg + "</div>" +
     "<div class='userInfo'>" +
     "<span class='list-group-item-heading'>" + userName + "</span>" +

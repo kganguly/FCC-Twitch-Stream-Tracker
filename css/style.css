@@ -48,16 +48,22 @@ header {
 
 .hide-button {
   transition: all 0.5s;
-  visibility: hidden;
-  opacity: 0;
+  opacity: 0.6;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5%;
+  right: 2%;
+  font-size: x-large;
+  font-weight: bold;
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  color: #6441a4;
 }
 
-.list-group-item.disabled .hide-button,
-.list-group-item:hover .hide-button {
-  visibility: visible;
+.list-group-item.disabled .hide-button {
+  opacity: 0.85;
+}
+
+.list-group-item .hide-button:hover {
   opacity: 1;
 }
 
@@ -210,4 +216,18 @@ footer a {
 a:visited,
 a:hover {
   text-decoration: none;
+}
+
+@media (hover: hover) {
+  .list-group-item.interactive .hide-button {
+    visibility: hidden;
+    opacity: 0;
+  }
+  .list-group-item.interactive:hover .hide-button {
+    visibility: visible;
+    opacity: 0.6;
+  }
+  .list-group-item.interactive .hide-button:hover {
+    opacity: 1;
+  }
 }
