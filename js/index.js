@@ -1,11 +1,11 @@
-var debug = true;
+var debug = false;
 var clientId = "whozyuc72w6lm5gapst8n65spsu3s7";
 var userNameArray = ["nalcs1", "esl_sc2", "ogamingsc2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "brunofin", "comster404"];
 var broadcasters = {};
 
 $(document).ready(function () {
   setListeners();
-  setBroadcasters(userNameArray);
+  loadData();
   getStatus();
 });
 
@@ -47,9 +47,28 @@ function setListeners() {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     let newUser = event.target.elements.newUser.value;
-    if (newUser) addBroadcaster(newUser);
+    if (newUser) addNewBroadcaster(newUser);
     document.getElementById("newUser").value = "";
   });
+}
+
+function storeData() {
+  localStorage.setItem("broadcasters", JSON.stringify(Object.keys(broadcasters)));
+  if (debug) console.log(`STORE: ${JSON.stringify(Object.keys(broadcasters))}`);
+}
+
+function loadData() {
+  const data = localStorage.getItem("broadcasters");
+  if (debug) console.log(`DATA: ${data}`);
+  if (!data) {
+    setBroadcasters(userNameArray);
+  } else {
+    const jsonArray = JSON.parse(data);
+    for (let broadcasterJson of jsonArray) {
+      broadcasters[broadcasterJson] = {};
+    }
+    if (debug) console.log("Broadcasters: ", broadcasters);
+  }
 }
 
 function setBroadcasters(userNames) {
@@ -74,10 +93,18 @@ function showStatus() {
   //throw "Testing!";
 }
 
-function addBroadcaster(userName) {
-  broadcasters[userName.toLowerCase()] = {};
+function addNewBroadcaster(userName) {
+  userName = userName.toLowerCase();
+  broadcasters[userName] = {};
+  storeData();
   let userPromise = getNewUser(userName);
   $.when.call($, userPromise, getUserStream(userName)).done(showStatus).fail(showFail);
+}
+
+function removeBroadcaster(userName) {
+  document.getElementById(userName).remove();
+  delete broadcasters[userName];
+  storeData();
 }
 
 function delayedPromise() {
@@ -133,6 +160,7 @@ function showUser(data) {
 
   var userHTML = "";
   userHTML += "<a id='" + data.name + "' class='list-group-item interactive' href='https://www.twitch.tv/" + data.name + "' target='_blank'>" +
+    "<button class='hide-button' onclick='removeBroadcaster(this.parentElement.id); event.preventDefault();'>x</button>" +
     "<div class='userLabel'>" +
     logoHtml +
     "<div class='userInfo'>" +
@@ -159,6 +187,7 @@ function noUser(err, queryUrl) {
   var userHTML = "";
 
   userHTML += "<div id='" + userName + "' class='list-group-item disabled userLabel'>" +
+    "<button class='hide-button' onclick='removeBroadcaster(this.parentElement.id); event.preventDefault();'>x</button>" +
     "<div class='userLogo'>" + glitchSvg + "</div>" +
     "<div class='userInfo'>" +
     "<span class='list-group-item-heading'>" + userName + "</span>" +
