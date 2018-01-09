@@ -97,8 +97,8 @@ function addNewBroadcaster(userName) {
   userName = userName.toLowerCase();
   broadcasters[userName] = {};
   storeData();
-  let userPromise = getNewUser(userName);
-  $.when.call($, userPromise, getUserStream(userName)).done(showStatus).fail(showFail);
+  // done(scrollToElement($(`#${userName}`))).
+  $.when.call($, getNewUser(userName), getUserStream(userName)).done(showStatus).done(() => scrollToElement($(`#${userName}`))).fail(showFail);
 }
 
 function removeBroadcaster(userName) {
