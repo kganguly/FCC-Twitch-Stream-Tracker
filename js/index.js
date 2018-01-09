@@ -3,22 +3,76 @@ var clientId = "whozyuc72w6lm5gapst8n65spsu3s7";
 var userNameArray = ["nalcs1", "esl_sc2", "ogamingsc2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "brunofin", "comster404"];
 var broadcasters = {};
 
-$(document).ready(function() {
+$(document).ready(function () {
   setListeners();
-  setBroadcasters(userNameArray);
+  loadData();
   getStatus();
 });
 
+function closeForm() {
+  document.getElementById("addUser").classList.remove("form");
+  document.getElementById("newUser").classList.remove("show");
+}
+
+function closeFormIfOutside() {
+  if (event.target.closest("div") !== document.getElementById("addUser")) {
+    closeForm();
+    window.removeEventListener("click", closeFormIfOutside);
+  }
+}
+
 function setListeners() {
-  $("#toTop").click(function(event) {
+  $("#toTop").click(function (event) {
     // Prevent default anchor click behavior
     event.preventDefault();
     scrollToTop(event);
   });
+  document.getElementById("userSubmit").addEventListener("click", function (event) {
+    if (!this.closest("div").classList.contains("form")) {
+      event.preventDefault();
+      this.closest("div").classList.add("form");
+      window.addEventListener("click", closeFormIfOutside);
+      setTimeout(() => {
+        if (document.getElementById("addUser").classList.contains("form")) {
+          let newUser = document.getElementById("newUser");
+          newUser.classList.add("show");
+          newUser.focus();
+        }
+      }, 1000);
+    } else {
+      closeForm();
+    }
+  });
+  let form = document.querySelector("#addUser>form");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    let newUser = event.target.elements.newUser.value;
+    if (newUser) addNewBroadcaster(newUser);
+    document.getElementById("newUser").value = "";
+  });
+}
+
+function storeData() {
+  localStorage.setItem("broadcasters", JSON.stringify(Object.keys(broadcasters)));
+  if (debug) console.log(`STORE: ${JSON.stringify(Object.keys(broadcasters))}`);
+}
+
+function loadData() {
+  const data = localStorage.getItem("broadcasters");
+  if (debug) console.log(`DATA: ${data}`);
+  if (!data) {
+    setBroadcasters(userNameArray);
+  } else {
+    const jsonArray = JSON.parse(data);
+    for (let broadcasterJson of jsonArray) {
+      broadcasters[broadcasterJson] = {};
+    }
+    if (debug) console.log("Broadcasters: ", broadcasters);
+  }
 }
 
 function setBroadcasters(userNames) {
-  userNames.forEach(function(element) {
+  userNames.forEach(function (element) {
     broadcasters[element.toLowerCase()] = {};
   });
   if (debug) console.log(broadcasters);
@@ -39,9 +93,26 @@ function showStatus() {
   //throw "Testing!";
 }
 
+function addNewBroadcaster(userName) {
+  userName = userName.toLowerCase();
+  broadcasters[userName] = {};
+  storeData();
+  // done(scrollToElement($(`#${userName}`))).
+  $.when.call($, getNewUser(userName), getUserStream(userName)).done(showStatus).done(() => scrollToElement($(`#${userName}`))).fail(showFail);
+}
+
+function removeBroadcaster(userName) {
+  document.getElementById(userName).remove();
+  delete broadcasters[userName];
+  storeData();
+}
+
 function delayedPromise() {
   var promise = $.Deferred();
-  setTimeout(function() {console.log("RESOLVE!"); promise.resolve();}, 3000);
+  setTimeout(function () {
+    console.log("RESOLVE!");
+    promise.resolve();
+  }, 3000);
   return promise;
 }
 
@@ -55,10 +126,16 @@ function getUsers() {
   return $.when.apply($, userPromiseArr);
 }
 
+function getNewUser(userName) {
+  var userPromise = getUser(userName);
+  broadcasters[userName].promise = userPromise;
+  return userPromise;
+}
+
 function getUser(userName) {
   var queryUrl = "https://api.twitch.tv/kraken/users/" + userName + "?api_version=3&client_id=" + clientId;
 
-  return submitQuery(queryUrl).then(showUser, function(data) {
+  return submitQuery(queryUrl).then(showUser, function (data) {
     noUser(data, queryUrl);
   });
 }
@@ -70,26 +147,27 @@ function showUser(data) {
   }
   broadcasters[data.name].data = data;
   if (debug) console.log(broadcasters);
-  
+
   var logoHtml = "";
   if (data.logo) {
     logoHtml = "<img class='img-circle userLogo' src='" + data.logo + "'>";
   } else {
     logoHtml = "<div class='userLogo'>" + glitchSvg + "</div>";
   }
-  
+
   var bioHtml = "";
   if (data.bio) bioHtml = "<p class='userBio'>" + data.bio + "</p>";
 
   var userHTML = "";
   userHTML += "<a id='" + data.name + "' class='list-group-item interactive' href='https://www.twitch.tv/" + data.name + "' target='_blank'>" +
-    "<div class='userLabel'>" + 
+    "<button class='hide-button' onclick='removeBroadcaster(this.parentElement.id); event.preventDefault();'>X</button>" +
+    "<div class='userLabel'>" +
     logoHtml +
     "<div class='userInfo'>" +
     "<span class='list-group-item-heading'>" + data.display_name + "</span>" +
     "<span class='list-group-item-text status'>Loading...</span>" +
-     bioHtml + 
-    "</div>" + 
+    bioHtml +
+    "</div>" +
     "</div></a>";
 
   $("#offline").append(userHTML);
@@ -109,6 +187,7 @@ function noUser(err, queryUrl) {
   var userHTML = "";
 
   userHTML += "<div id='" + userName + "' class='list-group-item disabled userLabel'>" +
+    "<button class='hide-button' onclick='removeBroadcaster(this.parentElement.id); event.preventDefault();'>X</button>" +
     "<div class='userLogo'>" + glitchSvg + "</div>" +
     "<div class='userInfo'>" +
     "<span class='list-group-item-heading'>" + userName + "</span>" +
@@ -126,7 +205,18 @@ function noUser(err, queryUrl) {
 function getStreams() {
   var queryUrl = "https://api.twitch.tv/kraken/streams?api_version=3&client_id=" + clientId + "&channel=" + Object.keys(broadcasters);
 
-  return submitQuery(queryUrl).then(showStreams, function(err, queryUrl) {
+  return submitQuery(queryUrl).then(showStreams, function (err, queryUrl) {
+    console.log("STREAM ERR:");
+    console.log(err);
+    console.log("Query: " + queryUrl);
+    return false;
+  });
+}
+
+function getUserStream(userName) {
+  var queryUrl = "https://api.twitch.tv/kraken/streams?api_version=3&client_id=" + clientId + "&channel=" + userName;
+
+  return submitQuery(queryUrl).then(showStreams, function (err, queryUrl) {
     console.log("STREAM ERR:");
     console.log(err);
     console.log("Query: " + queryUrl);
@@ -141,15 +231,15 @@ function showStreams(data) {
   }
 
   var showStreamPromArr = [];
-  
+
   var streams = data.streams;
-  streams.forEach(function(entry) {
+  streams.forEach(function (entry) {
     var userName = entry.channel.name;
     var userPromise = broadcasters[userName].promise;
     showStreamPromArr.push(userPromise.then(function () {
       var statusHTML = "<div class='text-center stream'><img src='" + entry.preview.large + "' class='img-responsive center-block'>" +
-          "<div class='description'><i class='fa fa-gamepad'></i> " + entry.game +
-          " - " + entry.channel.status + " | Viewers: " + entry.viewers + "</div></div>"; 
+        "<div class='description'><i class='fa fa-gamepad'></i> " + entry.game +
+        " - " + entry.channel.status + " | Viewers: " + entry.viewers + "</div></div>";
       var el = $("#" + userName);
       el.append(statusHTML);
       el.appendTo("#online");
@@ -157,10 +247,10 @@ function showStreams(data) {
       if (debug) console.log("SHOWSTREAM: " + userName);
     }));
   });
-  
-  return $.when.apply($, showStreamPromArr).then(function() {
+
+  return $.when.apply($, showStreamPromArr).then(function () {
     if (debug) {
-      console.log(showStreamPromArr); 
+      console.log(showStreamPromArr);
       console.log("STREAMS SHOWN!");
     }
   });
