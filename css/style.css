@@ -67,14 +67,19 @@ header {
   opacity: 1;
 }
 
+.userLabel {
+  display: flex;
+  align-items: center;
+}
+
 .list-group-item-heading {
   font-size: x-large;
-  /*margin-left: 0.75em;*/
+  margin-right: 0.5em;
 }
 
 .list-group-item-text {
+  display: inline-block;
   font-size: large;
-  margin-left: 0.5em;
 }
 
 .userLogo {
@@ -89,6 +94,7 @@ header {
 .userInfo {
   display: inline-block;
   margin-left: 1.5em;
+  padding-right: 2.5em;
   max-width: 80%;
   vertical-align: middle;
 }
