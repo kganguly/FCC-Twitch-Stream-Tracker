@@ -195,7 +195,7 @@ header {
 
 ::-moz-placeholder,
 ::-webkit-input-placeholder,
-::-ms-input-placeholder,
+:-ms-input-placeholder,
 ::placeholder {
   /* Doesn't seem to work in Firefox 57.04 */
   color: #696969;
