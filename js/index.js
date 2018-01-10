@@ -14,7 +14,7 @@ function closeForm() {
   document.getElementById("newUser").classList.remove("show");
 }
 
-function closeFormIfOutside() {
+function closeFormIfOutside(event) {
   if (event.target.closest("div") !== document.getElementById("addUser")) {
     closeForm();
     window.removeEventListener("click", closeFormIfOutside);
