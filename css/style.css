@@ -193,6 +193,14 @@ header {
   opacity: 1;
 }
 
+::-moz-placeholder,
+::-webkit-input-placeholder,
+::-ms-input-placeholder,
+::placeholder {
+  /* Doesn't seem to work in Firefox 57.04 */
+  color: #696969;
+}
+
 #userSubmit {
   background-color: rgba(0, 0, 0, 0);
   width: 60px;

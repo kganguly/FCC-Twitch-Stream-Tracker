@@ -95,10 +95,15 @@ function showStatus() {
 
 function addNewBroadcaster(userName) {
   userName = userName.toLowerCase();
-  broadcasters[userName] = {};
-  storeData();
-  // done(scrollToElement($(`#${userName}`))).
-  $.when.call($, getNewUser(userName), getUserStream(userName)).done(showStatus).done(() => scrollToElement($(`#${userName}`))).fail(showFail);
+  if (broadcasters[userName]) {
+    if (document.getElementById(userName))
+      scrollToElement($(`#${userName}`));
+    return;
+  } else {
+    broadcasters[userName] = {};
+    storeData();
+    $.when.call($, getNewUser(userName), getUserStream(userName)).done(showStatus).done(() => scrollToElement($(`#${userName}`))).fail(showFail);
+  }
 }
 
 function removeBroadcaster(userName) {
